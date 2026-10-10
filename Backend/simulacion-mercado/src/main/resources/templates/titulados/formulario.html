@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta a Titulados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+            <a class="nav-link text-white" href="/titulados/nuevo">📝 Nueva Encuesta</a>
+            <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+            <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+            <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+            <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+            <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+            <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+            <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+            <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+        </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h1 class="mb-4">Encuesta a Titulados de Ingeniería en Sistemas</h1>
+        <p class="text-muted">La Carrera de Ingeniería en Sistemas está en proceso de Autoevaluación para la acreditación ARCUSUR. Tu opinión es muy importante.</p>
+
+        <form th:action="@{/titulados/guardar}" th:object="${titulado}" method="post">
+
+            <!-- DATOS GENERALES -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">0. Datos Generales</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Edad:</label>
+                            <input type="number" th:field="*{edad}" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Género:</label>
+                            <select th:field="*{genero}" class="form-select" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Hombre">Hombre</option>
+                                <option value="Mujer">Mujer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Año de egreso:</label>
+                            <input type="number" th:field="*{anioEgreso}" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMACIÓN COMPLEMENTARIA -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">Formación Complementaria</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">¿Ha realizado formación complementaria?</label>
+                            <select th:field="*{formacionComplementaria}" class="form-select">
+                                <option value="false">No</option>
+                                <option value="true">Sí</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nivel máximo alcanzado:</label>
+                            <select th:field="*{nivelMaximo}" class="form-select">
+                                <option value="">Ninguno</option>
+                                <option value="Diplomado">Diplomado</option>
+                                <option value="Especialidad">Especialidad</option>
+                                <option value="Maestría">Maestría</option>
+                                <option value="Doctorado">Doctorado</option>
+                                <option value="Posdoctorado">Posdoctorado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">¿Dónde cursó?</label>
+                            <select th:field="*{dondeCurso}" class="form-select">
+                                <option value="">No aplica</option>
+                                <option value="EUPG">Escuela Universitaria de Posgrado</option>
+                                <option value="FCyT">Dirección de Posgrado FCyT</option>
+                                <option value="IBNORCA">IBNORCA</option>
+                                <option value="Internacional">Universidades Internacionales</option>
+                                <option value="Públicas">Universidades Públicas Nacionales</option>
+                                <option value="Privadas">Universidades Privadas</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fuente de financiamiento:</label>
+                            <select th:field="*{financiamiento}" class="form-select">
+                                <option value="Recursos propios">Recursos propios</option>
+                                <option value="Beca total">Beca total</option>
+                                <option value="Beca parcial">Beca parcial</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Nombre del programa:</label>
+                            <input type="text" th:field="*{nombrePrograma}" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREFERENCIAS DE POSGRADO -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning">Preferencias de Posgrado</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">¿Interesado en posgrado?</label>
+                            <select th:field="*{interesadoPosgrado}" class="form-select">
+                                <option value="false">No</option>
+                                <option value="true">Sí</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Área de interés:</label>
+                            <select th:field="*{areaInteres}" class="form-select">
+                                <option value="">Seleccione...</option>
+                                <option value="IA">Inteligencia Artificial</option>
+                                <option value="Robótica">Robótica</option>
+                                <option value="Ing. Software">Ingeniería de Software</option>
+                                <option value="BD">Base de Datos</option>
+                                <option value="Redes">Redes y Seguridad</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Organización preferida:</label>
+                            <select th:field="*{organizacionPreferida}" class="form-select">
+                                <option value="">Seleccione...</option>
+                                <option value="EUPG">EUPG</option>
+                                <option value="FCyT">FCyT</option>
+                                <option value="IBNORCA">IBNORCA</option>
+                                <option value="Internacional">Internacional</option>
+                                <option value="Públicas">Universidades Públicas</option>
+                                <option value="Privadas">Universidades Privadas</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMPLEABILIDAD -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">Empleabilidad</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Años de vida profesional:</label>
+                            <input type="number" th:field="*{aniosVidaProfesional}" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tiempo desempleado (meses):</label>
+                            <input type="number" th:field="*{tiempoDesempleado}" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Situación laboral actual:</label>
+                            <select th:field="*{situacionLaboral}" class="form-select">
+                                <option value="">Seleccione...</option>
+                                <option value="Empleado">Actualmente trabajo en una organización</option>
+                                <option value="Desempleado">Actualmente NO trabajo</option>
+                                <option value="Emprendedor">Dedico mi tiempo a emprendimiento propio</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tiempo para conseguir primer empleo:</label>
+                            <select th:field="*{tiempoPrimerEmpleo}" class="form-select">
+                                <option value="">Seleccione...</option>
+                                <option value="Ya trabajaba">Ya trabajaba antes de titularse</option>
+                                <option value="Menos de 1 mes">Menos de 1 mes</option>
+                                <option value="1-4 meses">Entre 1 - 4 meses</option>
+                                <option value="4-8 meses">Entre 4 - 8 meses</option>
+                                <option value="8-12 meses">Entre 8 - 12 meses</option>
+                                <option value="Más de 12 meses">Más de 12 meses</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Número de empleos desde titulación:</label>
+                            <select th:field="*{numeroEmpleos}" class="form-select">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="Más de 3">Más de 3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPETENCIAS (Likert 1-5) -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">Evaluación de Competencias (1 = Muy bajo, 5 = Muy alto)</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Competencias técnicas:</label>
+                            <input type="number" th:field="*{competenciasTecnicas}" min="1" max="5" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Competencias blandas:</label>
+                            <input type="number" th:field="*{competenciasBlandas}" min="1" max="5" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Satisfacción con la formación:</label>
+                            <input type="number" th:field="*{satisfaccion}" min="1" max="5" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACTO -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">Contacto</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Email:</label>
+                            <input type="email" th:field="*{email}" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Teléfono/WhatsApp:</label>
+                            <input type="text" th:field="*{telefono}" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">LinkedIn:</label>
+                            <input type="text" th:field="*{linkedin}" class="form-control">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">¿Le interesaría formar parte de una red de contactos?</label>
+                            <select th:field="*{redContactos}" class="form-select">
+                                <option value="false">No</option>
+                                <option value="true">Sí</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">💾 Guardar Encuesta</button>
+                <a href="/titulados" class="btn btn-secondary btn-lg">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <footer class="bg-light text-center py-3">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Titulados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="/titulados/nuevo">📝 Nueva Encuesta</a>
+                <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+                <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+                <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+                <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+                <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+                <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+                <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+                <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Lista de Titulados Registrados</h1>
+    <div>
+        <a href="/titulados/exportar/csv" class="btn btn-success">📥 Descargar CSV</a>
+        <a href="/titulados/exportar/excel" class="btn btn-warning">📊 Descargar Excel</a>
+        <a href="/titulados/nuevo" class="btn btn-primary">➕ Nueva Encuesta</a>
+    </div>
+        </div>
+
+        <!-- Tabla de titulados -->
+        <div th:if="${titulados != null and !titulados.isEmpty()}" class="table-responsive">
+            <table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>N°</th>
+            <th>ID</th>
+            <th>Edad</th>
+            <th>Género</th>
+            <th>Año Egreso</th>
+            <th>Área de Interés</th>
+            <th>Situación Laboral</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="t, tStat : ${titulados}">
+            <td th:text="${tStat.count}">1</td>
+            <td th:text="${t.id}">1</td>
+            <td th:text="${t.edad}">30</td>
+            <td th:text="${t.genero}">Hombre</td>
+            <td th:text="${t.anioEgreso}">2018</td>
+            <td th:text="${t.areaInteres}">IA</td>
+            <td th:text="${t.situacionLaboral}">Empleado</td>
+            <td>
+                <a th:href="@{/titulados/ver/{id}(id=${t.id})}" class="btn btn-sm btn-info">👁️ Ver</a>
+                <a th:href="@{/titulados/eliminar/{id}(id=${t.id})}" class="btn btn-sm btn-danger"
+                  onclick="return confirm('¿Está seguro de eliminar este registro?')">🗑️ Eliminar</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+        </div>
+
+        <div class="mt-4">
+            <a href="/titulados" class="btn btn-secondary">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

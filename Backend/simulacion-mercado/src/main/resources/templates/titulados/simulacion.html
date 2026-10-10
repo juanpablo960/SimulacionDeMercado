@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación Monte Carlo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+            <a class="nav-link text-white" href="/titulados/nuevo">📝 Nueva Encuesta</a>
+            <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+            <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+            <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+            <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+            <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+            <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+            <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+            <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+        </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">🎲 Simulación Monte Carlo - Demanda de Posgrados</h1>
+        <p class="text-muted">Proyección futura de la demanda de posgrados mediante simulación de sistemas.</p>
+
+        <!-- FORMULARIO DE PARÁMETROS -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Parámetros de Simulación</div>
+            <div class="card-body">
+                <form method="get" action="/titulados/simulacion">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Número de simulaciones:</label>
+                            <select name="n" class="form-select">
+                                <option value="100" th:selected="${nSimulaciones == 100}">100</option>
+                                <option value="500" th:selected="${nSimulaciones == 500}">500</option>
+                                <option value="1000" th:selected="${nSimulaciones == 1000}">1000</option>
+                                <option value="5000" th:selected="${nSimulaciones == 5000}">5000</option>
+                                <option value="10000" th:selected="${nSimulaciones == 10000}">10000</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">🎲 Ejecutar Simulación</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- INFO DEL GENERADOR -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Generador Congruencial Mixto</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Fórmula:</strong> X<sub>n+1</sub> = (a·X<sub>n</sub> + c) mod m</p>
+                        <p><strong>a:</strong> <span th:text="${infoGenerador['a']}">5</span></p>
+                        <p><strong>c:</strong> <span th:text="${infoGenerador['c']}">7</span></p>
+                        <p><strong>m:</strong> <span th:text="${infoGenerador['m']}">8</span></p>
+                        <p><strong>Semilla:</strong> <span th:text="${infoGenerador['semilla']}">4</span></p>
+                        <p><strong>Periodo completo:</strong>
+                            <span class="badge bg-success" th:if="${infoGenerador['periodoCompleto']}">SÍ</span>
+                            <span class="badge bg-danger" th:unless="${infoGenerador['periodoCompleto']}">NO</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Primeros 20 números generados:</strong></p>
+                        <div class="bg-light p-2" style="font-family: monospace; font-size: 0.85em;">
+                            <span th:each="num : ${infoGenerador['primeros20']}"
+                                  th:text="${num} + ' '">0.0 </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div th:if="${resultado != null}">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5>Titulados en muestra</h5>
+                            <h2 class="text-primary" th:text="${resultado.nTitulados}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5>Prob. de interés</h5>
+                            <h2 class="text-success" th:text="${resultado.probabilidadPosgrado} + '%'">0%</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5>Simulaciones</h5>
+                            <h2 class="text-info" th:text="${resultado.nSimulaciones}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5>Demanda promedio</h5>
+                            <h2 class="text-warning" th:text="${resultado.demandaPromedio}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERVALO DE CONFIANZA -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">Intervalo de Confianza al 95%</div>
+                <div class="card-body text-center">
+                    <h3>
+                        <span th:text="${resultado.demandaPromedio}">0</span>
+                        ±
+                        <span th:text="${(resultado.icSuperior - resultado.icInferior) / 2}">0</span>
+                    </h3>
+                    <p class="lead">
+                        IC 95%: [<span th:text="${resultado.icInferior}">0</span>,
+                        <span th:text="${resultado.icSuperior}">0</span>]
+                    </p>
+                    <p class="text-muted">
+                        Con un 95% de confianza, la demanda de posgrados estará entre
+                        <strong th:text="${resultado.icInferior}">0</strong> y
+                        <strong th:text="${resultado.icSuperior}">0</strong> titulados.
+                    </p>
+                </div>
+            </div>
+
+            <!-- HISTOGRAMA -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">Histograma de Demandas</div>
+                        <div class="card-body">
+                            <canvas id="histograma"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">Demanda por Área de Interés</div>
+                        <div class="card-body">
+                            <canvas id="porArea"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTADÍSTICAS DETALLADAS -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning">Estadísticas de la Simulación</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th>Demanda promedio</th>
+                                <td th:text="${resultado.demandaPromedio}">0</td>
+                            </tr>
+                            <tr>
+                                <th>Desviación estándar</th>
+                                <td th:text="${resultado.desviacionEstandar}">0</td>
+                            </tr>
+                            <tr>
+                                <th>Demanda mínima</th>
+                                <td th:text="${resultado.demandaMinima}">0</td>
+                            </tr>
+                            <tr>
+                                <th>Demanda máxima</th>
+                                <td th:text="${resultado.demandaMaxima}">0</td>
+                            </tr>
+                            <tr>
+                                <th>IC 95% inferior</th>
+                                <td th:text="${resultado.icInferior}">0</td>
+                            </tr>
+                            <tr>
+                                <th>IC 95% superior</th>
+                                <td th:text="${resultado.icSuperior}">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/titulados" class="btn btn-secondary">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script th:inline="javascript">
+        const histograma = /*[[${resultado != null ? resultado.histograma : null}]]*/ null;
+        const etiquetas = /*[[${resultado != null ? resultado.etiquetasHistograma : null}]]*/ null;
+        const demandaPorArea = /*[[${resultado != null ? resultado.demandaPorArea : null}]]*/ null;
+
+        if (histograma && etiquetas) {
+            new Chart(document.getElementById('histograma'), {
+                type: 'bar',
+                data: {
+                    labels: etiquetas,
+                    datasets: [{
+                        label: 'Frecuencia',
+                        data: histograma,
+                        backgroundColor: '#36A2EB'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        if (demandaPorArea) {
+            new Chart(document.getElementById('porArea'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(demandaPorArea),
+                    datasets: [{
+                        data: Object.values(demandaPorArea),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

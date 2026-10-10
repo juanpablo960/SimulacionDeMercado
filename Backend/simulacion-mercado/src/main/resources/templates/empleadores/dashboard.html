@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Empleadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="/titulados/nuevo">📝 Titulados</a>
+                <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+                <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+                <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+                <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+                <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+                <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+                <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+                <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Dashboard de Empleadores</h1>
+
+        <!-- TARJETAS DE RESUMEN -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5>Total Empleadores</h5>
+                        <h2 class="text-primary" th:text="${reporte['totalEmpleadores']}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5>Meta ARCUSUR</h5>
+                        <h2 class="text-success">5</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5>Promedio Likert</h5>
+                        <h2 class="text-warning" th:text="${reporte['promedioGeneralLikert']}">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">Por Tipo de Organización</div>
+                    <div class="card-body">
+                        <canvas id="graficoTipo"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">Por Tamaño</div>
+                    <div class="card-body">
+                        <canvas id="graficoTamano"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-warning">Por Rubro</div>
+                    <div class="card-body">
+                        <canvas id="graficoRubro"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">Probabilidad de Contratación</div>
+                    <div class="card-body">
+                        <canvas id="graficoProbabilidad"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VALORACIÓN LIKERT -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Valoración de la Formación (Promedios Likert)</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Ítem</th>
+                                <th>Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${reporte['promediosLikert']}">
+                                <td th:text="${item.key}">-</td>
+                                <td>
+                                    <span class="badge bg-primary" th:text="${item.value}">0</span>
+                                    <span th:if="${item.value >= 3.5}" class="badge bg-success">Alto</span>
+                                    <span th:if="${item.value >= 2.5 and item.value < 3.5}" class="badge bg-warning">Medio</span>
+                                    <span th:if="${item.value < 2.5}" class="badge bg-danger">Bajo</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/empleadores" class="btn btn-secondary">← Volver al inicio</a>
+            <a href="/empleadores/lista" class="btn btn-info">📋 Ver lista completa</a>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script th:inline="javascript">
+        const porTipo = /*[[${reporte['porTipo']}]]*/ {};
+        const porTamano = /*[[${reporte['porTamano']}]]*/ {};
+        const porRubro = /*[[${reporte['porRubro']}]]*/ {};
+        const porProbabilidad = /*[[${reporte['porProbabilidad']}]]*/ {};
+
+        function crearGrafico(id, datos, tipo, colores) {
+            const canvas = document.getElementById(id);
+            if (!canvas) return;
+            if (!datos || Object.keys(datos).length === 0) {
+                datos = { 'Sin datos': 0 };
+            }
+            new Chart(canvas, {
+                type: tipo,
+                data: {
+                    labels: Object.keys(datos),
+                    datasets: [{
+                        data: Object.values(datos),
+                        backgroundColor: colores
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        crearGrafico('graficoTipo', porTipo, 'pie',
+            ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0']);
+        crearGrafico('graficoTamano', porTamano, 'doughnut',
+            ['#FF6384', '#36A2EB', '#FFCE56', '#9966FF']);
+        crearGrafico('graficoRubro', porRubro, 'bar',
+            ['#4BC0C0', '#36A2EB', '#FF6384', '#FFCE56', '#9966FF']);
+        crearGrafico('graficoProbabilidad', porProbabilidad, 'pie',
+            ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']);
+    </script>
+</body>
+</html>

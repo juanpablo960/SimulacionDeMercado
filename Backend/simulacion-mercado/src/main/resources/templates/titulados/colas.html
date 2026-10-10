@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Colas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="/titulados/nuevo">📝 Titulados</a>
+                <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+                <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+                <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+                <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+                <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+                <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+                <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+                <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+                <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">⏳ Simulación de Colas - Atención a Titulados</h1>
+        <p class="text-muted">
+            Determina el número óptimo de personal para atender a los titulados en la Dirección de Carrera.
+        </p>
+
+        <!-- FORMULARIO -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Parámetros de Simulación</div>
+            <div class="card-body">
+                <form method="get" action="/titulados/colas">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Número de clientes (titulados):</label>
+                            <select name="n" class="form-select">
+                                <option value="50" th:selected="${nClientes == 50}">50</option>
+                                <option value="100" th:selected="${nClientes == 100}">100</option>
+                                <option value="500" th:selected="${nClientes == 500}">500</option>
+                                <option value="1000" th:selected="${nClientes == 1000}">1000</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tasa de llegada (titulados/hora):</label>
+                            <select name="lambda" class="form-select">
+                                <option value="5" th:selected="${lambda == 5}">5 por hora</option>
+                                <option value="10" th:selected="${lambda == 10}">10 por hora</option>
+                                <option value="15" th:selected="${lambda == 15}">15 por hora</option>
+                                <option value="20" th:selected="${lambda == 20}">20 por hora</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">⏳ Ejecutar Simulación</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div th:if="${resultados != null}">
+            <!-- COMPARATIVA DE SERVIDORES -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Comparación de Escenarios</h3>
+        <p class="text-muted">
+            Se simularon <strong th:text="${resultados.size()}">6</strong> escenarios
+            con diferentes números de servidores
+            (<span th:each="r, iter : ${resultados}">
+                <span th:text="${r.numServidores}">1</span><span th:if="${!iter.last}">, </span>
+            </span>).
+        </p>
+    </div>
+</div>
+
+    <!-- COMPARATIVA DE SERVIDORES -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3" th:each="r : ${resultados}">
+        <div class="card shadow-sm h-100"
+             th:classappend="${r.numServidores == servidorOptimo ? 'border-success border-3' : ''}">
+            <div class="card-header text-white"
+                 th:classappend="${r.utilizacion > 90 ? 'bg-danger' : (r.utilizacion >= 60 ? 'bg-success' : 'bg-warning')}">
+                <h4 th:text="${r.numServidores} + ' Servidor(es)'">1 Servidor</h4>
+                <span th:if="${r.numServidores == servidorOptimo}"
+                      class="badge bg-light text-dark">⭐ RECOMENDADO</span>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <th>Tiempo espera</th>
+                            <td th:text="${r.tiempoEsperaPromedio} + ' min'">0 min</td>
+                        </tr>
+                        <tr>
+                            <th>Espera máxima</th>
+                            <td th:text="${r.tiempoEsperaMaximo} + ' min'">0 min</td>
+                        </tr>
+                        <tr>
+                            <th>Cola promedio</th>
+                            <td th:text="${r.colaPromedio}">0</td>
+                        </tr>
+                        <tr>
+                            <th>Utilización</th>
+                            <td th:text="${r.utilizacion} + '%'">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>    
+
+            <!-- RECOMENDACIÓN DINÁMICA -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">Análisis y Recomendación</div>
+    <div class="card-body">
+        <p class="lead">
+            <strong>Análisis de escenarios:</strong>
+        </p>
+        <ul>
+            <li>Escenarios simulados: <strong>1, 2, 3, 4, 5 y 6 servidores</strong>.</li>
+            <li>Criterio: se busca una <strong>utilización entre 60% y 90%</strong> (óptimo).</li>
+            <li>Si la utilización es <strong>mayor al 90%</strong>, el servidor está saturado.</li>
+            <li>Si la utilización es <strong>menor al 60%</strong>, el servidor está subutilizado.</li>
+        </ul>
+
+        <div class="alert alert-success text-center mt-3">
+    <h4>✅ Recomendación óptima: <strong th:text="${servidorOptimo}">2</strong> servidores</h4>
+    <p class="mb-0">Este es el menor número de servidores con utilización en el rango óptimo (60-90%).</p>
+</div>
+
+<!-- ANÁLISIS TEÓRICO -->
+<div class="card mb-4">
+    <div class="card-header bg-secondary text-white">📐 Fundamento Matemático</div>
+    <div class="card-body">
+        <p><strong>Carga de trabajo total:</strong></p>
+        <p>
+            λ × E[S] = 
+            <span th:text="${lambda}">10</span> llegadas/hora × 
+            <span th:text="${(5 + 15) / 2.0}">10</span> min promedio = 
+            <strong th:text="${#numbers.formatDecimal(lambda * 10 / 60, 1, 2)}">3.33</strong> unidades de trabajo por minuto
+        </p>
+
+        <p><strong>Fórmula de utilización:</strong></p>
+        <p>ρ = (λ × E[S]) / c</p>
+
+        <p><strong>Interpretación:</strong></p>
+        <ul>
+            <li>Si ρ > 1: el sistema se satura, la cola crece indefinidamente.</li>
+            <li>Si ρ > 0.9: el sistema está saturado, tiempos de espera altos.</li>
+            <li>Si 0.6 ≤ ρ ≤ 0.9: <strong>utilización óptima</strong>, tiempo de espera aceptable.</li>
+            <li>Si ρ < 0.6: subutilización, recursos desperdiciados.</li>
+        </ul>
+    </div>
+</div>
+
+        <!-- DETALLE DE LA RECOMENDACIÓN -->
+        <div class="table-responsive mt-3">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Servidores</th>
+                        <th>Espera Promedio</th>
+                        <th>Utilización</th>
+                        <th>Estado</th>
+                        <th>¿Recomendado?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${resultados}"
+                        th:classappend="${r.numServidores == servidorOptimo ? 'table-success' : ''}">
+                        <td th:text="${r.numServidores}">1</td>
+                        <td th:text="${r.tiempoEsperaPromedio} + ' min'">0</td>
+                        <td th:text="${r.utilizacion} + '%'">0%</td>
+                        <td>
+                            <span th:if="${r.utilizacion > 90}" class="badge bg-danger">🔴 Saturado</span>
+                            <span th:if="${r.utilizacion >= 60 and r.utilizacion <= 90}" class="badge bg-success">🟢 Óptimo</span>
+                            <span th:if="${r.utilizacion < 60}" class="badge bg-warning">🟡 Subutilizado</span>
+                        </td>
+                        <td>
+                            <span th:if="${r.numServidores == servidorOptimo}" class="badge bg-success">✅ RECOMENDADO</span>
+                            <span th:unless="${r.numServidores == servidorOptimo}">—</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+            <!-- GRÁFICOS -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">Tiempo de Espera vs Servidores</div>
+                        <div class="card-body">
+                            <canvas id="graficoEspera"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">Utilización vs Servidores</div>
+                        <div class="card-body">
+                            <canvas id="graficoUtilizacion"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA RESUMEN -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">Tabla Comparativa</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Servidores</th>
+                                    <th>Espera Promedio</th>
+                                    <th>Espera Máxima</th>
+                                    <th>Cola Promedio</th>
+                                    <th>Cola Máxima</th>
+                                    <th>Utilización</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${resultados}">
+                                    <td th:text="${r.numServidores}">1</td>
+                                    <td th:text="${r.tiempoEsperaPromedio} + ' min'">0</td>
+                                    <td th:text="${r.tiempoEsperaMaximo} + ' min'">0</td>
+                                    <td th:text="${r.colaPromedio}">0</td>
+                                    <td th:text="${r.colaMaxima}">0</td>
+                                    <td th:text="${r.utilizacion} + '%'">0%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/titulados" class="btn btn-secondary">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script th:inline="javascript">
+        const resultados = /*[[${resultados}]]*/ [];
+        const servidores = resultados.map(r => r.numServidores + ' serv.');
+        const esperas = resultados.map(r => r.tiempoEsperaPromedio);
+        const utilizaciones = resultados.map(r => r.utilizacion);
+
+        // Gráfico de Tiempo de Espera
+        new Chart(document.getElementById('graficoEspera'), {
+            type: 'bar',
+            data: {
+                labels: servidores,
+                datasets: [{
+                    label: 'Tiempo de espera (min)',
+                    data: esperas,
+                    backgroundColor: ['#FF6384', '#FFCE56', '#4BC0C0']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Gráfico de Utilización
+        new Chart(document.getElementById('graficoUtilizacion'), {
+            type: 'bar',
+            data: {
+                labels: servidores,
+                datasets: [{
+                    label: 'Utilización (%)',
+                    data: utilizaciones,
+                    backgroundColor: ['#FF6384', '#FFCE56', '#4BC0C0']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, max: 100 } }
+            }
+        });
+    </script>
+</body>
+</html>

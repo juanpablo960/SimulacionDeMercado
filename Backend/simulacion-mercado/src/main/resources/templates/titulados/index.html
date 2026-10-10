@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Mercado - Titulados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+            <a class="nav-link text-white" href="/titulados/nuevo">📝 Nueva Encuesta</a>
+            <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+            <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+            <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+            <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+            <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+            <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+            <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+            <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+        </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4">Sistema de Análisis de Mercado</h1>
+                <p class="lead">Titulados de Ingeniería en Sistemas - UMSS</p>
+                <p>Enfoque ARCUSUR - Autoevaluación Académica</p>
+            </div>
+        </div>
+
+        <!-- Tarjetas de resumen -->
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h1 class="display-3 text-primary" th:text="${totalTitulados}">0</h1>
+                        <p class="card-text">Titulados registrados</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h1 class="display-3 text-success">5</h1>
+                        <p class="card-text">Áreas de interés</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h1 class="display-3 text-info">60</h1>
+                        <p class="card-text">Muestra objetivo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones principales -->
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">Encuesta a Titulados</div>
+                    <div class="card-body">
+                        <p>Registra tu opinión sobre formación, empleabilidad y expectativas de posgrado.</p>
+                        <a href="/titulados/nuevo" class="btn btn-primary">📝 Llenar Encuesta</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">Dashboard Estadístico</div>
+                    <div class="card-body">
+                        <p>Visualiza estadísticas, matrices cruzadas y gráficos interactivos.</p>
+                        <a href="/titulados/dashboard" class="btn btn-success">📊 Ver Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="bg-light text-center py-3 mt-5">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Empleador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📊 Análisis de Mercado - UMSS</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="/titulados/nuevo">📝 Titulados</a>
+                <a class="nav-link text-white" href="/titulados/lista">📋 Lista</a>
+                <a class="nav-link text-white" href="/titulados/dashboard">📊 Dashboard</a>
+                <a class="nav-link text-white" href="/titulados/chi-cuadrada">🔬 Chi-Cuadrada</a>
+                <a class="nav-link text-white" href="/titulados/simulacion">🎲 Simulación</a>
+                <a class="nav-link text-white" href="/empleadores">🏢 Empleadores</a>
+                <a class="nav-link text-white" href="/titulados/inversion">💰 Inversión</a>
+                <a class="nav-link text-white" href="/titulados/colas">⏳ Colas</a>
+                <a class="nav-link text-white" href="/titulados/analisis-cruzado">🔀 Cruzado</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Detalle del Empleador</h1>
+
+        <div th:if="${empleador == null}" class="alert alert-warning">
+            El empleador no existe.
+            <a href="/empleadores/lista" class="alert-link">Volver a la lista</a>
+        </div>
+
+        <div th:if="${empleador != null}">
+            <!-- DATOS DE LA ORGANIZACIÓN -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">Datos de la Organización</div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> <span th:text="${empleador.id}">1</span></p>
+                    <p><strong>Nombre:</strong> <span th:text="${empleador.nombreEmpresa}">-</span></p>
+                    <p><strong>Tipo:</strong> <span th:text="${empleador.tipoOrganizacion}">-</span></p>
+                    <p><strong>Tamaño:</strong> <span th:text="${empleador.tamanoOrganizacion}">-</span></p>
+                    <p><strong>Rubro:</strong> <span th:text="${empleador.rubro}">-</span></p>
+                </div>
+            </div>
+
+            <!-- EMPLEABILIDAD -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">Empleabilidad</div>
+                <div class="card-body">
+                    <p><strong>¿Contrató últimos 5 años?:</strong>
+                        <span th:text="${empleador.contratoUltimos5Anios ? 'Sí' : 'No'}">-</span>
+                    </p>
+                    <p><strong>Probabilidad de contratación:</strong>
+                        <span th:text="${empleador.probabilidadContratacion}">-</span>
+                    </p>
+                    <p><strong>Nivel de formación requerido:</strong>
+                        <span th:text="${empleador.nivelFormacionRequerido}">-</span>
+                    </p>
+                    <p><strong>Medio de convocatoria:</strong>
+                        <span th:text="${empleador.medioConvocatoria}">-</span>
+                    </p>
+                    <p><strong>Cargos desempeñados:</strong>
+                        <span th:text="${empleador.cargosDesempenados}">-</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- REQUERIMIENTOS -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning">Requerimientos del Sector</div>
+                <div class="card-body">
+                    <p><strong>Nuevas áreas:</strong></p>
+                    <p th:text="${empleador.nuevasAreasConocimiento}">-</p>
+                    <hr>
+                    <p><strong>Herramientas:</strong></p>
+                    <p th:text="${empleador.nuevasHerramientas}">-</p>
+                    <hr>
+                    <p><strong>Habilidades:</strong></p>
+                    <p th:text="${empleador.habilidadesCompetencias}">-</p>
+                </div>
+            </div>
+
+            <!-- VALORACIÓN LIKERT -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">Valoración de la Formación (1-4)</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr><th>Confianza en la UMSS</th><td th:text="${empleador.valConfianza}">-</td></tr>
+                            <tr><th>Consistencia del título</th><td th:text="${empleador.valConsistenciaTitulo}">-</td></tr>
+                            <tr><th>Consulta regular</th><td th:text="${empleador.valConsultasEmpleadores}">-</td></tr>
+                            <tr><th>Conoce el perfil</th><td th:text="${empleador.valConocePerfil}">-</td></tr>
+                            <tr><th>Coherencia perfil vs desempeño</th><td th:text="${empleador.valCoherenciaPerfil}">-</td></tr>
+                            <tr><th>Formación integral</th><td th:text="${empleador.valFormacionIntegral}">-</td></tr>
+                            <tr><th>Incorporación de necesidades</th><td th:text="${empleador.valIncorporacionNecesidades}">-</td></tr>
+                            <tr><th>Competencias laborales</th><td th:text="${empleador.valCompetenciasLaborales}">-</td></tr>
+                            <tr><th>Valores y ética</th><td th:text="${empleador.valValoresEtica}">-</td></tr>
+                            <tr><th>Participación en procesos</th><td th:text="${empleador.valParticipacionProcesos}">-</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="/empleadores/lista" class="btn btn-secondary">← Volver a la lista</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <p class="mb-0">© 2026 Universidad Mayor de San Simón - Ingeniería en Sistemas</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
